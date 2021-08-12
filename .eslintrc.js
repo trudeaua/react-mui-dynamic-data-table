@@ -36,7 +36,7 @@ module.exports = {
 
     'react-hooks/rules-of-hooks': 'warn',
     'react-hooks/exhaustive-deps': 'warn',
-
+    'react/jsx-curly-brace-presence': 'off',
     'react/jsx-filename-extension': [1, { extensions: ['.tsx'] }],
     'react/jsx-max-depth': ['warn', { max: 9 }],
     'react/jsx-newline': [0, { prevent: false }],
@@ -80,6 +80,7 @@ module.exports = {
     camelcase: 0,
     'func-style': 0,
     'one-var': 0,
+    'new-cap': 'off',
     'no-param-reassign': 0,
     'no-undefined': 0,
     'max-params': 0,

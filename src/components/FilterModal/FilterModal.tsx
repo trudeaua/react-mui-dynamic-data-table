@@ -334,7 +334,7 @@ const FilterModal = <T extends DataTableRecord>({
                         onChange={(event) =>
                           setSelect(
                             key,
-                            event.target.value as string | number | null
+                            event.target.value as number | string | null
                           )
                         }
                         placeholder={lookupTitle(key)}

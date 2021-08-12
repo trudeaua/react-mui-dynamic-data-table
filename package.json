@@ -25,7 +25,7 @@
   "scripts": {
     "build": "tsc",
     "format": "prettier --write \"src/**/*.{ts, tsx, md}\"",
-    "lint": "tslint -p tsconfig.json",
+    "lint": "eslint ./src",
     "test": "jest --watchAll --coverage --detectOpenHandles",
     "prepare": "yarn build",
     "prepublishOnly": "yarn test && yarn lint",
@@ -54,6 +54,7 @@
     "@typescript-eslint/parser": "^4.29.1",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "jest": "^27.0.6",
