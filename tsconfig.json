@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "./dist",
+    "strict": true,
+    "jsx": "react",
+    "lib": ["dom", "es2018"],
+    "noEmit": false,
+    "moduleResolution": "node",
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "src",
+    "typeRoots": ["node_modules/@types"],
+    "types": ["node", "jest"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}
