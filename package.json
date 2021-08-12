@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A dynamic data table component for React that uses Material UI",
   "main": "dist/index.js",
-   "types": "dist/index.d.ts",
+  "types": "dist/index.d.ts",
   "repository": "https://github.com/trudeaua/react-mui-dynamic-data-table.git",
   "author": "Alex Trudeau <trudeauadev@gmail.com>",
   "license": "MIT",
@@ -14,25 +14,34 @@
   "files": [
     "dist/**/*"
   ],
-  "keywords": ["react", "dynamic", "data", "table", "material", "ui"],
+  "keywords": [
+    "react",
+    "dynamic",
+    "data",
+    "table",
+    "material",
+    "ui"
+  ],
   "scripts": {
     "build": "tsc",
     "format": "prettier --write \"src/**/*.{ts, tsx, md}\"",
     "lint": "tslint -p tsconfig.json",
     "test": "jest --watchAll --coverage --detectOpenHandles",
-    "prepare" : "yarn build",
-    "prepublishOnly" : "yarn test && yarn lint",
-    "preversion" : "yarn lint",
-    "version" : "yarn format && git add -A src",
-    "postversion" : "git push && git push --tags"
+    "prepare": "yarn build",
+    "prepublishOnly": "yarn test && yarn lint",
+    "preversion": "yarn lint",
+    "version": "yarn format && git add -A src",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
-    "@material-ui/core": "^4.12.3",
-    "@material-ui/icons": "^4.11.2",
-    "date-fns": "^2.23.0",
+    "@material-ui/core": "^5.0.0-beta.3",
+    "@material-ui/icons": "^5.0.0-beta.1",
+    "@material-ui/lab": "^5.0.0-alpha.42",
     "lodash": "^4.17.21",
+    "moment": "^2.29.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-perfect-scrollbar": "^1.5.8",
     "use-deep-compare-effect": "^1.6.1"
   },
   "devDependencies": {
