@@ -41,7 +41,6 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { useTranslation } from 'react-i18next';
 
 /**
  * Convert a datatable entry into a string
@@ -248,7 +247,7 @@ interface TableProps<T extends DataTableRecord> {
  * Retrieve and apply the user's row number selection from local storage
  * @returns The user's row number selection from their last session, if any
  */
-export const retrieveRowsPerPage = () => {
+const retrieveRowsPerPage = () => {
   let rowsPerPage: number | null = null;
 
   try {
@@ -270,7 +269,7 @@ export const retrieveRowsPerPage = () => {
  * Store the user's row number selection in local storage
  * @param rowsPerPage User's current row number selection
  */
-export const storeRowsPerPage = (rowsPerPage: number): void => {
+const storeRowsPerPage = (rowsPerPage: number): void => {
   window.localStorage.setItem('rowsPerPage', JSON.stringify(rowsPerPage));
 };
 
@@ -282,7 +281,6 @@ function DataTable<T extends DataTableRecord>({
   onRowClick,
   loading = false,
 }: TableProps<T>) {
-  const { t } = useTranslation();
   const theme = useTheme();
 
   const [sortingBy, setSortingBy] = useState(
@@ -683,7 +681,7 @@ function DataTable<T extends DataTableRecord>({
                 {options?.actions &&
                   (options.actions?.edit?.show ||
                     options.actions?.open?.show) && (
-                    <TableCell align="right">{t('Actions')}</TableCell>
+                    <TableCell align="right">{'Actions'}</TableCell>
                   )}
               </TableRow>
             </TableHead>
@@ -790,7 +788,7 @@ function DataTable<T extends DataTableRecord>({
                         color="textSecondary"
                         variant="h6"
                       >
-                        {options?.noData?.message ?? t('No data')}
+                        {options?.noData?.message ?? 'No data'}
                       </Typography>
                     </ContentLoader>
                   </TableCell>

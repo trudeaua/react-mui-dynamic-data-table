@@ -1,8 +1,5 @@
-import Box from '@material-ui/core/Box/Box';
-import TextField from '@material-ui/core/TextField/TextField';
-import DatePicker from '@material-ui/lab/DatePicker/DatePicker';
-import DateTimePicker from '@material-ui/lab/DateTimePicker/DateTimePicker';
-import TimePicker from '@material-ui/lab/TimePicker/TimePicker';
+import { Box, TextField } from '@material-ui/core';
+import { DatePicker, DateTimePicker, TimePicker } from '@material-ui/lab';
 import moment from 'moment';
 import React from 'react';
 

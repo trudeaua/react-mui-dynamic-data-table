@@ -10,7 +10,7 @@ lerna-debug.log*
 node_modules/
 
 # Compiled code
-dist/
+lib/
 
 # Tests
 coverage/

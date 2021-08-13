@@ -86,7 +86,7 @@ export type DataTableColumn<T extends DataTableRecord> = {
     /**
      * Unique name of the column
      */
-    name: K | string;
+    name: K;
     /**
      * Displayed title of the column
      */

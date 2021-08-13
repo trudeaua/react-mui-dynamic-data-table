@@ -1,5 +1,4 @@
-import { CircularProgress } from '@material-ui/core';
-import Box from '@material-ui/core/Box/Box';
+import { CircularProgress, Box } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import React from 'react';
 import type { FC } from 'react';
