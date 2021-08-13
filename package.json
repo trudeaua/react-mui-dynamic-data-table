@@ -30,8 +30,7 @@
     "build:cjs": "tsc --module commonjs --outDir lib/cjs",
     "format": "prettier --write \"src/**/*.{ts, tsx, md}\"",
     "lint": "tslint -p tsconfig.json",
-    "test": "jest --config jestconfig.json",
-    "prepublishOnly": "yarn test && yarn lint",
+    "prepublishOnly": "yarn lint",
     "preversion": "yarn lint",
     "version": "yarn format && git add -A src",
     "postversion": "git push && git push --tags"

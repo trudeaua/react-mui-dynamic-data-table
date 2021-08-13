@@ -258,7 +258,7 @@ const retrieveRowsPerPage = () => {
     }
   } catch (err) {
     if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
+      // tslint:disable-next-line no-console
       console.error(err);
     }
   }
