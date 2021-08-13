@@ -33,7 +33,7 @@ import {
   useTheme,
 } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox/Checkbox';
-import { ArrowForward, Edit, Search } from '@material-ui/icons';
+import { ArrowForward, Search, Edit } from '@material-ui/icons';
 import React, {
   isValidElement,
   useCallback,
@@ -41,9 +41,10 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
- * Convert a data table entry into a string
+ * Convert a datatable entry into a string
  * @param value Datatable entry
  * @param style Style that the entry should be shown in
  * @returns A string representing the datatable entry
@@ -93,7 +94,7 @@ interface TableOptions<T extends DataTableRecord> {
       /**
        * Indicates whether the action button should be shown or not
        */
-      show?: boolean;
+      show: boolean;
       /**
        * Callback for handling clicking the action button
        */
@@ -103,7 +104,7 @@ interface TableOptions<T extends DataTableRecord> {
       /**
        * Indicates whether the action button should be shown or not
        */
-      show?: boolean;
+      show: boolean;
       /**
        * Callback for handling clicking the action button
        */
@@ -121,20 +122,20 @@ interface TableOptions<T extends DataTableRecord> {
       /**
        * Indicates whether the badge should be shown or not
        */
-      show?: boolean;
+      show: boolean;
       /**
        * Colour of the badge. Defaults to the main colour of the current theme's primary palette.
        */
       color?: string;
     };
     /**
-     * Options for table actions in the top right corner of the header
+     * Options for table actions in the top right corner
      */
     actions?: {
       /**
        * Indicates whether the actions should be shown or not
        */
-      show?: boolean;
+      show: boolean;
       /**
        * Actions node to show
        */
@@ -191,7 +192,7 @@ interface TableOptions<T extends DataTableRecord> {
     /**
      * Callback that fires when a row is selected.
      *
-     * `selected` is an array of indices in the original dataset of the rows that are selected
+     * All selected rows are passed as the arg.
      */
     onSelect?: (selected: number[]) => void;
     /**
@@ -207,9 +208,6 @@ interface TableOptions<T extends DataTableRecord> {
      */
     selected?: number[];
   };
-  /**
-   * Options for when there is no data in the table
-   */
   noData?: {
     /**
      * Message to show when there is no data in the table
@@ -250,7 +248,7 @@ interface TableProps<T extends DataTableRecord> {
  * Retrieve and apply the user's row number selection from local storage
  * @returns The user's row number selection from their last session, if any
  */
-const retrieveRowsPerPage = () => {
+export const retrieveRowsPerPage = () => {
   let rowsPerPage: number | null = null;
 
   try {
@@ -272,7 +270,7 @@ const retrieveRowsPerPage = () => {
  * Store the user's row number selection in local storage
  * @param rowsPerPage User's current row number selection
  */
-const storeRowsPerPage = (rowsPerPage: number): void => {
+export const storeRowsPerPage = (rowsPerPage: number): void => {
   window.localStorage.setItem('rowsPerPage', JSON.stringify(rowsPerPage));
 };
 
@@ -284,9 +282,12 @@ function DataTable<T extends DataTableRecord>({
   onRowClick,
   loading = false,
 }: TableProps<T>) {
+  const { t } = useTranslation();
   const theme = useTheme();
 
-  const [sortingBy, setSortingBy] = useState(options?.sort?.by ?? '');
+  const [sortingBy, setSortingBy] = useState(
+    options?.sort?.by ?? (columns.length > 0 ? columns[0].name : '')
+  );
   const [sortingOrder, setSortingOrder] = useState<'asc' | 'desc'>(
     options?.sort?.order ?? 'desc'
   );
@@ -486,7 +487,7 @@ function DataTable<T extends DataTableRecord>({
   const searchData = useCallback(
     (input: string, data?: { key: number; row: T }[]) => {
       const escapedInput = escapeRegExp(input);
-      return (data ?? idData).filter(
+      const toReturn = (data ?? idData).filter(
         ({ row }) =>
           columns.filter(
             ({ name, style, getRenderedEntry, getSearchEntry }) => {
@@ -501,19 +502,24 @@ function DataTable<T extends DataTableRecord>({
                 )
               ) {
                 value = rawValue.replace(/\s/gu, '').toLocaleLowerCase();
-              } else if (getSearchEntry) {
+              }
+              if (getSearchEntry) {
                 const rawStr = getSearchEntry(raw);
                 value = rawStr.replace(/\s/gu, '').toLocaleLowerCase();
               }
-              const escapedValue = escapeRegExp(value);
-              const one = new RegExp(`${escapedInput}`, 'u').test(value);
-              const two = new RegExp(`${escapedValue}`, 'u').test(input);
-              return one || two;
+              const match = new RegExp(`${escapedInput}`, 'u').test(value);
+              return match;
             }
           ).length > 0
       );
+      // Change page based on num entries in data
+      const newPage = Math.floor(toReturn.length / rowsPerPage);
+      if (newPage < page) {
+        setPage(newPage);
+      }
+      return toReturn;
     },
-    [columns, idData]
+    [columns, idData, page, rowsPerPage]
   );
 
   const handleSearchChange = (
@@ -552,12 +558,12 @@ function DataTable<T extends DataTableRecord>({
         {title && (
           <CardHeader
             action={
-              (options?.header?.actions?.show ?? true) && (
+              options?.header?.actions?.show && (
                 <Box>{options?.header?.actions?.node}</Box>
               )
             }
             avatar={
-              (options?.header?.badge?.show ?? true) && (
+              options?.header?.badge?.show && (
                 <Badge
                   anchorOrigin={{
                     vertical: 'top',
@@ -567,7 +573,7 @@ function DataTable<T extends DataTableRecord>({
                   sx={{
                     '& .MuiBadge-badge': {
                       backgroundColor:
-                        options?.header?.badge?.color ??
+                        options.header.badge.color ??
                         theme.palette.primary.main,
                       left: 10,
                       top: 11,
@@ -617,7 +623,7 @@ function DataTable<T extends DataTableRecord>({
                                 : theme.palette.grey['400'],
                           }}
                         >
-                          <Search fontSize="medium" />
+                          <Search color="inherit" fontSize="medium" />
                         </InputAdornment>
                       ),
                     }}
@@ -638,7 +644,7 @@ function DataTable<T extends DataTableRecord>({
                 </Box>
               )}
             </Box>
-            {!title && (options?.header?.actions?.show ?? true) && (
+            {!title && options?.header?.actions?.show && (
               <Box sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
                 {options?.header?.actions?.node}
               </Box>
@@ -675,9 +681,9 @@ function DataTable<T extends DataTableRecord>({
                   </TableCell>
                 ))}
                 {options?.actions &&
-                  ((options.actions?.edit?.show ?? true) ||
-                    (options.actions?.open?.show ?? true)) && (
-                    <TableCell align="right">{'Actions'}</TableCell>
+                  (options.actions?.edit?.show ||
+                    options.actions?.open?.show) && (
+                    <TableCell align="right">{t('Actions')}</TableCell>
                   )}
               </TableRow>
             </TableHead>
@@ -740,8 +746,8 @@ function DataTable<T extends DataTableRecord>({
                       )
                     )}
                     {options?.actions &&
-                      ((options.actions?.edit?.show ?? true) ||
-                        (options.actions?.open?.show ?? true)) && (
+                      (options.actions?.edit?.show ||
+                        options.actions?.open?.show) && (
                         <TableCell align="right">
                           {options.actions?.edit?.show && (
                             <IconButton
@@ -751,7 +757,7 @@ function DataTable<T extends DataTableRecord>({
                               <Edit color="inherit" fontSize="medium" />
                             </IconButton>
                           )}
-                          {(options.actions?.open?.show ?? true) && (
+                          {options.actions?.open?.show && (
                             <IconButton
                               onClick={() => handleOpenClick?.(row)}
                               sx={{ color: theme.palette.text.primary }}
@@ -784,7 +790,7 @@ function DataTable<T extends DataTableRecord>({
                         color="textSecondary"
                         variant="h6"
                       >
-                        {options?.noData?.message ?? 'No data'}
+                        {options?.noData?.message ?? t('No data')}
                       </Typography>
                     </ContentLoader>
                   </TableCell>
