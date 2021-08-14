@@ -14,3 +14,7 @@ lib/
 
 # Tests
 coverage/
+
+# Example application
+/example/node_modules
+/example/build
