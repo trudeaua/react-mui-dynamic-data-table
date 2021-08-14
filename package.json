@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "react-mui-dynamic-data-table",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A dynamic data table component for React that uses Material UI",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
@@ -10,7 +10,10 @@
   "author": "Alex Trudeau <trudeauadev@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/trudeaua/react-mui-dynamic-data-table.git"
+    "url": "https://github.com/trudeaua/react-mui-dynamic-data-table.git/issues"
+  },
+  "contributes": {
+    "url": "https://github.com/trudeaua/react-mui-dynamic-data-table.git/pulls"
   },
   "homepage": "https://github.com/trudeaua/react-mui-dynamic-data-table.git#readme",
   "files": [
