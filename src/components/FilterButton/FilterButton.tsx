@@ -10,7 +10,7 @@ import type {
 import { countFilters, createFilters } from '../../utils/datatable';
 import FilterModal from '../FilterModal/FilterModal';
 import { Tooltip, IconButton, Badge } from '@material-ui/core';
-import TuneIcon from '@material-ui/icons/tune';
+import { Tune } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useDeepCompareEffectNoCheck } from 'use-deep-compare-effect';
 
@@ -63,7 +63,7 @@ const FilterButton = <T extends DataTableRecord>({
       <Tooltip title="Filter">
         <IconButton color="inherit" onClick={handleOpen}>
           <Badge badgeContent={numFilters} color="error">
-            <TuneIcon fontSize="large" />
+            <Tune fontSize="large" />
           </Badge>
         </IconButton>
       </Tooltip>
