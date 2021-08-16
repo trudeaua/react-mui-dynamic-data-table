@@ -250,17 +250,9 @@ interface TableProps<T extends DataTableRecord> {
 const retrieveRowsPerPage = () => {
   let rowsPerPage: number | null = null;
 
-  try {
-    const storedRows: string | null =
-      window.localStorage.getItem('rowsPerPage');
-    if (storedRows) {
-      rowsPerPage = JSON.parse(storedRows) as number;
-    }
-  } catch (err) {
-    if (process.env.NODE_ENV === 'development') {
-      // tslint:disable-next-line no-console
-      console.error(err);
-    }
+  const storedRows: string | null = window.localStorage.getItem('rowsPerPage');
+  if (storedRows) {
+    rowsPerPage = JSON.parse(storedRows) as number;
   }
   return rowsPerPage;
 };
@@ -271,6 +263,10 @@ const retrieveRowsPerPage = () => {
  */
 const storeRowsPerPage = (rowsPerPage: number): void => {
   window.localStorage.setItem('rowsPerPage', JSON.stringify(rowsPerPage));
+};
+
+const messages = {
+  actions: 'Actions',
 };
 
 function DataTable<T extends DataTableRecord>({
@@ -681,7 +677,7 @@ function DataTable<T extends DataTableRecord>({
                 {options?.actions &&
                   (options.actions?.edit?.show ||
                     options.actions?.open?.show) && (
-                    <TableCell align="right">{'Actions'}</TableCell>
+                    <TableCell align="right">{messages.actions}</TableCell>
                   )}
               </TableRow>
             </TableHead>

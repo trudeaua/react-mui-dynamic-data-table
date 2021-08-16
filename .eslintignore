@@ -1,0 +1,9 @@
+.cache
+.translations
+public
+.github
+node_modules
+.eslintrc.cjs
+translationRunner.js
+gatsby-node.js
+.translationcache
