@@ -49,6 +49,13 @@ interface Validation {
   cleared?: boolean;
 }
 
+const messages = {
+  apply: 'Apply',
+  filter: 'Filter',
+  clearFilters: 'Clear Filters',
+  select: 'Select...',
+};
+
 const FilterModal = <T extends DataTableRecord>({
   onApply,
   onClose,
@@ -236,9 +243,9 @@ const FilterModal = <T extends DataTableRecord>({
             sx={{ display: 'flex', flex: '1 1 0' }}
             variant="h4"
           >
-            {'Filter'}
+            {messages.filter}
           </Typography>
-          <Button onClick={clearFilters}>{'Clear filters'}</Button>
+          <Button onClick={clearFilters}>{messages.clearFilters}</Button>
         </Box>
         <Box sx={{ mt: 2 }}>
           {Object.entries(selectedFilters).flatMap(
@@ -342,7 +349,7 @@ const FilterModal = <T extends DataTableRecord>({
                         variant="outlined"
                       >
                         <MenuItem selected value="">
-                          {'Select...'}
+                          {messages.select}
                         </MenuItem>
                         {input.items.map((item, index) => (
                           <MenuItem
@@ -373,7 +380,7 @@ const FilterModal = <T extends DataTableRecord>({
             onClick={handleApplyFilters}
             variant="contained"
           >
-            {'Apply'}
+            {messages.apply}
           </Button>
         </Box>
       </Box>
