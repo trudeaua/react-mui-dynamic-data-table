@@ -1,19 +1,28 @@
-interface DropdownItem {
+export interface DropdownItem {
+  /**
+   * Value of the item
+   */
   value: string;
-  node: any;
+  /**
+   * Item to render
+   */
+  node: React.ReactNode;
 }
 
-interface CheckboxItem extends DropdownItem {
+export interface CheckboxItem extends DropdownItem {
+  /**
+   * Indicates whether the checkbox is check or not
+   */
   checked: boolean;
 }
 
 interface RenderOptions {
   /**
-   * Disable using `render` to render entries in a table
+   * Disable using `getRenderedEntry` to render entries in a table
    */
   disableTable?: boolean;
   /**
-   * Disable using `render` to render entries in the filter modal
+   * Disable using `getRenderedEntry` to render entries in the filter modal
    */
   disableFilterModal?: boolean;
 }
@@ -55,9 +64,8 @@ export interface DropdownInput {
   rendering?: RenderOptions;
 }
 
-export type Filters<T extends DataTableRecord> = Record<
-  string | keyof T,
-  {
+export type Filters<T extends DataTableRecord> = {
+  [K in keyof T]: {
     /**
      * Defines the style of the input displayed when filtering items
      */
@@ -69,17 +77,17 @@ export type Filters<T extends DataTableRecord> = Record<
     /**
      * Callback for rendering the item
      */
-    getRenderedEntry?: (value: any) => React.ReactNode;
+    getRenderedEntry?: (value: T[K]) => React.ReactNode;
     /**
      * Callback for getting the item's search text
      */
-    getSearchEntry?: (value: any) => string;
+    getSearchEntry?: (value: T[K]) => string;
     /**
      * Callback for the item's unique identifier
      */
-    getRowIdentifier?: (value: any) => string;
-  }
->;
+    getFilterIdentifier?: (value: T[K]) => string;
+  };
+};
 
 export type DataTableColumn<T extends DataTableRecord> = {
   [K in keyof T]: {
@@ -108,17 +116,19 @@ export type DataTableColumn<T extends DataTableRecord> = {
      */
     rendering?: RenderOptions;
     /**
-     * Callback for rendering the item
+     * Callback for rendering the item in the data table and in the filter modal
      */
     getRenderedEntry?: (value: T[K]) => React.ReactNode;
     /**
-     * Callback for getting the item's search text
+     * Callback for getting the item's search text when searching
      */
     getSearchEntry?: (value: T[K]) => string;
     /**
-     * Callback for the item's unique identifier
+     * Callback for getting the item's unique identifier used in filtering
+     *
+     * @description Should be set if the column style is `'default'` (checkboxes) or `'select'` and the column elements are JSON-like objects
      */
-    getRowIdentifier?: (value: T[K]) => string;
+    getFilterIdentifier?: (value: T[K]) => string;
     /**
      * Custom sorting function for sorting column entries
      */
@@ -130,9 +140,6 @@ export type DataTableType =
   | Date
   | React.ReactNode
   | Record<string, unknown>
-  | boolean
-  | number
-  | string
   | null;
 
 export type DataTableRecord = Record<string, DataTableType>;

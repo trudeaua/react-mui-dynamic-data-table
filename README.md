@@ -17,7 +17,9 @@ A dynamic data table component for React that uses Material UI.
   - Dropdown inputs
 - Row selection (single + multi select)
 - Row actions and events (click, edit, and open buttons)
-- Custom rendering
+- Custom rendering, searching, and sorting functions
+  - Allows user defined callbacks for rendering, searching, and sorting table entries
+  - Supports JSON-like objects and React.ReactNode
 
 ## Installation
 
@@ -129,7 +131,7 @@ Set the `style` property of the column definition to control to type of componen
 
 You can render an entry as a React Node using `getRenderedEntry` in the column definitions. This should be used in conjunction with `getSearchEntry` when searching is enabled.
 
-**Note** `getRenderedEntry` and `getSearchEntry` are especially useful for rendering JSON-like objects. See the [code sandbox](https://codesandbox.io/s/brave-goldwasser-cf6v3?file=/src/App.tsx) for a more complex example.
+**Note** `getRenderedEntry` and `getSearchEntry` are especially useful for rendering JSON-like objects. See the [code sandbox](https://codesandbox.io/s/brave-goldwasser-cf6v3?file=/src/App.tsx) for a more complex example. If rendering a JSON-like object, it is recommended to use `getFilterIdentifier`, which acts like React's `key` prop to uniquely identify a table entry.
 
 ```typescript
     columns={[
@@ -195,7 +197,7 @@ If your data is fetched asynchronously, you can choose to show a loading indicat
 ```typescript
 type DataType = {firstName: string, lastName: string, age: number};
 const [loading, setLoading] = useState();
-const [data, setData] = useState<DataType>();
+const [data, setData] = useState<DataType[]>();
 
 useEffect(() => {
     async function getData() {
@@ -211,7 +213,7 @@ return (
     <MuiDynamicDataTable
         columns={columns}
         data={data}
-        loading={{loading}}
+        loading={loading}
     >
     )
 ```
