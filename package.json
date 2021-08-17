@@ -45,6 +45,7 @@
     "@material-ui/core": "^5.0.0-beta.3",
     "@material-ui/icons": "^5.0.0-beta.1",
     "@material-ui/lab": "^5.0.0-alpha.42",
+    "date-fns": "^2.23.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "react-perfect-scrollbar": "^1.5.8",
