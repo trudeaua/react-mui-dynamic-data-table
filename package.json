@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "react-mui-dynamic-data-table",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A dynamic data table component for React that uses Material UI",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
