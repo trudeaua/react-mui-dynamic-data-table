@@ -1,5 +1,7 @@
 import { Box, TextField } from '@material-ui/core';
 import { DatePicker, DateTimePicker, TimePicker } from '@material-ui/lab';
+import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
+import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
 import moment from 'moment';
 import React from 'react';
 
@@ -88,150 +90,152 @@ export default function RangePicker({
   const minValueNumber =
     minValue instanceof Date ? minValue.getTime() : minValue;
   return (
-    <Box
-      mb={1}
-      sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}
-    >
-      <Box sx={{ minWidth: 100, width: '100%', mt: '0.5em' }}>
-        {PickerComponent ? (
-          <PickerComponent
-            label={minLabel}
-            onChange={(newMin: Date | number | null) => {
-              if (newMin !== null) {
-                newMin =
-                  mode === 'date'
-                    ? moment(newMin).startOf('day').toDate().getTime()
-                    : new Date(newMin).getTime();
-              }
-              const newMax =
-                // eslint-disable-next-line no-nested-ternary
-                maxValueNumber === null
-                  ? null
-                  : mode === 'date'
-                  ? moment(maxValueNumber).endOf('day').toDate().getTime()
-                  : maxValueNumber;
-              let newRange: Range = [null, null];
-              if (
-                newMin !== null &&
-                ((newMax !== null && moment(newMin).isAfter(newMax)) ||
-                  newMax === null)
-              ) {
-                newRange = [newMin, newMin];
-              } else {
-                newRange = [newMin, newMax];
-              }
-              onChange?.(newRange);
-            }}
-            renderInput={(inputProps) => (
-              <TextField
-                {...inputProps}
-                error={Boolean(touched && errors?.start)}
-                fullWidth
-                helperText={touched && errors?.start}
-                id={`${name}--start`}
-                name={name}
-                onBlur={onBlur}
-                variant="outlined"
-              />
-            )}
-            value={minValueNumber}
-          />
-        ) : (
-          <TextField
-            InputProps={{ inputProps: { min: 0 } }}
-            error={Boolean(touched && errors?.start)}
-            helperText={touched && errors?.start}
-            id={`${name}--start`}
-            label={minLabel}
-            name={name}
-            onBlur={onBlur}
-            onChange={(event) => {
-              const newMin = Number(event.target.value);
-              let newRange: Range = [null, null];
-              if (maxValueNumber === null) {
-                newRange = [newMin, newMin];
-              } else if (newMin > maxValueNumber) {
-                newRange = [newMin, newMin];
-              } else {
-                newRange = [newMin, maxValueNumber];
-              }
-              onChange?.(newRange);
-            }}
-            sx={{ width: '100%' }}
-            type="number"
-            value={minValueNumber ?? ''}
-          />
-        )}
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Box
+        mb={1}
+        sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}
+      >
+        <Box sx={{ minWidth: 100, width: '100%', mt: '0.5em' }}>
+          {PickerComponent ? (
+            <PickerComponent
+              label={minLabel}
+              onChange={(newMin: Date | number | null) => {
+                if (newMin !== null) {
+                  newMin =
+                    mode === 'date'
+                      ? moment(newMin).startOf('day').toDate().getTime()
+                      : new Date(newMin).getTime();
+                }
+                const newMax =
+                  // eslint-disable-next-line no-nested-ternary
+                  maxValueNumber === null
+                    ? null
+                    : mode === 'date'
+                    ? moment(maxValueNumber).endOf('day').toDate().getTime()
+                    : maxValueNumber;
+                let newRange: Range = [null, null];
+                if (
+                  newMin !== null &&
+                  ((newMax !== null && moment(newMin).isAfter(newMax)) ||
+                    newMax === null)
+                ) {
+                  newRange = [newMin, newMin];
+                } else {
+                  newRange = [newMin, newMax];
+                }
+                onChange?.(newRange);
+              }}
+              renderInput={(inputProps) => (
+                <TextField
+                  {...inputProps}
+                  error={Boolean(touched && errors?.start)}
+                  fullWidth
+                  helperText={touched && errors?.start}
+                  id={`${name}--start`}
+                  name={name}
+                  onBlur={onBlur}
+                  variant="outlined"
+                />
+              )}
+              value={minValueNumber}
+            />
+          ) : (
+            <TextField
+              InputProps={{ inputProps: { min: 0 } }}
+              error={Boolean(touched && errors?.start)}
+              helperText={touched && errors?.start}
+              id={`${name}--start`}
+              label={minLabel}
+              name={name}
+              onBlur={onBlur}
+              onChange={(event) => {
+                const newMin = Number(event.target.value);
+                let newRange: Range = [null, null];
+                if (maxValueNumber === null) {
+                  newRange = [newMin, newMin];
+                } else if (newMin > maxValueNumber) {
+                  newRange = [newMin, newMin];
+                } else {
+                  newRange = [newMin, maxValueNumber];
+                }
+                onChange?.(newRange);
+              }}
+              sx={{ width: '100%' }}
+              type="number"
+              value={minValueNumber ?? ''}
+            />
+          )}
+        </Box>
+        <Box sx={{ minWidth: 100, width: '100%' }}>
+          {PickerComponent ? (
+            <PickerComponent
+              label={maxLabel}
+              onChange={(newMax: Date | number | null) => {
+                if (newMax !== null) {
+                  newMax =
+                    mode === 'date'
+                      ? moment(newMax).endOf('day').toDate().getTime()
+                      : new Date(newMax).getTime();
+                }
+                let newRange: Range = [null, null];
+                const newMin =
+                  // eslint-disable-next-line no-nested-ternary
+                  minValueNumber === null
+                    ? null
+                    : mode === 'date'
+                    ? moment(minValueNumber).startOf('day').toDate().getTime()
+                    : minValueNumber;
+                if (
+                  newMin !== null &&
+                  newMax !== null &&
+                  moment(newMax).isBefore(newMin)
+                ) {
+                  newRange = [newMax, newMax];
+                } else {
+                  newRange = [newMin, newMax];
+                }
+                onChange?.(newRange);
+              }}
+              renderInput={(inputProps) => (
+                <TextField
+                  {...inputProps}
+                  error={Boolean(touched && errors?.end)}
+                  fullWidth
+                  helperText={touched && errors?.end}
+                  id={`${name}--end`}
+                  name={name}
+                  onBlur={onBlur}
+                  variant="outlined"
+                />
+              )}
+              value={maxValueNumber}
+            />
+          ) : (
+            <TextField
+              InputProps={{ inputProps: { min: 0 } }}
+              error={Boolean(touched && errors?.end)}
+              helperText={touched && errors?.end}
+              id={`${name}--end`}
+              label={maxLabel}
+              name={name}
+              onBlur={onBlur}
+              onChange={(event) => {
+                const newMax = Number(event.target.value);
+                let newRange: Range = [null, null];
+                if (minValueNumber !== null && newMax < minValueNumber) {
+                  newRange = [newMax, newMax];
+                } else {
+                  newRange = [minValueNumber, newMax];
+                }
+                onChange?.(newRange);
+              }}
+              sx={{ width: '100%' }}
+              type="number"
+              value={maxValueNumber ?? ''}
+            />
+          )}
+        </Box>
       </Box>
-      <Box sx={{ minWidth: 100, width: '100%' }}>
-        {PickerComponent ? (
-          <PickerComponent
-            label={maxLabel}
-            onChange={(newMax: Date | number | null) => {
-              if (newMax !== null) {
-                newMax =
-                  mode === 'date'
-                    ? moment(newMax).endOf('day').toDate().getTime()
-                    : new Date(newMax).getTime();
-              }
-              let newRange: Range = [null, null];
-              const newMin =
-                // eslint-disable-next-line no-nested-ternary
-                minValueNumber === null
-                  ? null
-                  : mode === 'date'
-                  ? moment(minValueNumber).startOf('day').toDate().getTime()
-                  : minValueNumber;
-              if (
-                newMin !== null &&
-                newMax !== null &&
-                moment(newMax).isBefore(newMin)
-              ) {
-                newRange = [newMax, newMax];
-              } else {
-                newRange = [newMin, newMax];
-              }
-              onChange?.(newRange);
-            }}
-            renderInput={(inputProps) => (
-              <TextField
-                {...inputProps}
-                error={Boolean(touched && errors?.end)}
-                fullWidth
-                helperText={touched && errors?.end}
-                id={`${name}--end`}
-                name={name}
-                onBlur={onBlur}
-                variant="outlined"
-              />
-            )}
-            value={maxValueNumber}
-          />
-        ) : (
-          <TextField
-            InputProps={{ inputProps: { min: 0 } }}
-            error={Boolean(touched && errors?.end)}
-            helperText={touched && errors?.end}
-            id={`${name}--end`}
-            label={maxLabel}
-            name={name}
-            onBlur={onBlur}
-            onChange={(event) => {
-              const newMax = Number(event.target.value);
-              let newRange: Range = [null, null];
-              if (minValueNumber !== null && newMax < minValueNumber) {
-                newRange = [newMax, newMax];
-              } else {
-                newRange = [minValueNumber, newMax];
-              }
-              onChange?.(newRange);
-            }}
-            sx={{ width: '100%' }}
-            type="number"
-            value={maxValueNumber ?? ''}
-          />
-        )}
-      </Box>
-    </Box>
+    </LocalizationProvider>
   );
 }
