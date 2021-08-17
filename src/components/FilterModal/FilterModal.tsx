@@ -98,7 +98,8 @@ const FilterModal = <T extends DataTableRecord>({
     setBackupSelectedFilters(selectedFilters);
     // Depth >= 2 requires cloneDeep, else weird stuff happens
     const clearedFilters: Filters<T> = cloneDeep(selectedFilters);
-    Object.entries(clearedFilters).forEach(([key, { input }]) => {
+    Object.keys(clearedFilters).forEach((column) => {
+      const { input } = clearedFilters[column];
       if (isCheckboxInput(input)) {
         input.items.forEach((option) => {
           option.checked = false;
@@ -109,8 +110,8 @@ const FilterModal = <T extends DataTableRecord>({
       } else if (isDropdownInput(input)) {
         input.selected = null;
       }
-      clearedFilters[key as string | keyof T] = {
-        ...clearedFilters[key],
+      clearedFilters[column as keyof T] = {
+        ...clearedFilters[column],
         input: { ...input },
       };
     });
@@ -248,125 +249,124 @@ const FilterModal = <T extends DataTableRecord>({
           <Button onClick={clearFilters}>{messages.clearFilters}</Button>
         </Box>
         <Box sx={{ mt: 2 }}>
-          {Object.entries(selectedFilters).flatMap(
-            ([key, { style, input }]) => {
-              const column = columns.find((f) => f.name === key);
-              if (!column) {
-                return [];
-              }
-              if (style === 'default' && isCheckboxInput(input)) {
-                return [
-                  <Box key={`section-${key}`}>
-                    <Typography
-                      align="left"
-                      color="textSecondary"
-                      gutterBottom
-                      variant="overline"
-                    >
-                      {lookupTitle(key)}
-                    </Typography>
-                    <Divider />
-                    {input.items.map((item, index) => (
-                      <Box
-                        key={`checkbox-${key}-${index}`}
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                        }}
-                      >
-                        <Typography
-                          align="left"
-                          color="textPrimary"
-                          gutterBottom
-                          variant="subtitle2"
-                        >
-                          {item.node}
-                        </Typography>
-                        <Checkbox
-                          checked={item.checked}
-                          color="primary"
-                          onChange={(e) => {
-                            selectCheckbox(e.target.checked, key, item.value);
-                          }}
-                        />
-                      </Box>
-                    ))}
-                  </Box>,
-                ];
-              } else if (
-                (style === 'date' ||
-                  style === 'datetime' ||
-                  style === 'time' ||
-                  style === 'number') &&
-                isRangeInput(input)
-              ) {
-                return [
-                  <Box key={`section-${key}`}>
-                    <Typography
-                      align="left"
-                      color="textSecondary"
-                      gutterBottom
-                      variant="overline"
-                    >
-                      {lookupTitle(key)}
-                    </Typography>
-                    <Divider />
-                    <RangePicker
-                      maxValue={input.max}
-                      minValue={input.min}
-                      mode={style}
-                      onChange={(range: [number | null, number | null]) =>
-                        setRange(key, range[0], range[1])
-                      }
-                    />
-                  </Box>,
-                ];
-              } else if (style === 'select' && isDropdownInput(input)) {
-                return [
-                  <Box key={`section-${key}`}>
-                    <Typography
-                      align="left"
-                      color="textSecondary"
-                      gutterBottom
-                      variant="overline"
-                    >
-                      {lookupTitle(key)}
-                    </Typography>
-                    <Divider />
-                    <Box sx={{ my: 1 }}>
-                      <Select
-                        displayEmpty
-                        fullWidth
-                        onChange={(event) =>
-                          setSelect(
-                            key,
-                            event.target.value as number | string | null
-                          )
-                        }
-                        placeholder={lookupTitle(key)}
-                        value={input.selected ?? ''}
-                        variant="outlined"
-                      >
-                        <MenuItem selected value="">
-                          {messages.select}
-                        </MenuItem>
-                        {input.items.map((item, index) => (
-                          <MenuItem
-                            key={`dropdown-item-${index}`}
-                            value={item.value}
-                          >
-                            {item.node}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </Box>
-                  </Box>,
-                ];
-              }
+          {Object.keys(selectedFilters).flatMap((key) => {
+            const { style, input } = selectedFilters[key];
+            const column = columns.find((f) => f.name === key);
+            if (!column) {
               return [];
             }
-          )}
+            if (style === 'default' && isCheckboxInput(input)) {
+              return [
+                <Box key={`section-${key}`}>
+                  <Typography
+                    align="left"
+                    color="textSecondary"
+                    gutterBottom
+                    variant="overline"
+                  >
+                    {lookupTitle(key)}
+                  </Typography>
+                  <Divider />
+                  {input.items.map((item, index) => (
+                    <Box
+                      key={`checkbox-${key}-${index}`}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <Typography
+                        align="left"
+                        color="textPrimary"
+                        gutterBottom
+                        variant="subtitle2"
+                      >
+                        {item.node}
+                      </Typography>
+                      <Checkbox
+                        checked={item.checked}
+                        color="primary"
+                        onChange={(e) => {
+                          selectCheckbox(e.target.checked, key, item.value);
+                        }}
+                      />
+                    </Box>
+                  ))}
+                </Box>,
+              ];
+            } else if (
+              (style === 'date' ||
+                style === 'datetime' ||
+                style === 'time' ||
+                style === 'number') &&
+              isRangeInput(input)
+            ) {
+              return [
+                <Box key={`section-${key}`}>
+                  <Typography
+                    align="left"
+                    color="textSecondary"
+                    gutterBottom
+                    variant="overline"
+                  >
+                    {lookupTitle(key)}
+                  </Typography>
+                  <Divider />
+                  <RangePicker
+                    maxValue={input.max}
+                    minValue={input.min}
+                    mode={style}
+                    onChange={(range: [number | null, number | null]) =>
+                      setRange(key, range[0], range[1])
+                    }
+                  />
+                </Box>,
+              ];
+            } else if (style === 'select' && isDropdownInput(input)) {
+              return [
+                <Box key={`section-${key}`}>
+                  <Typography
+                    align="left"
+                    color="textSecondary"
+                    gutterBottom
+                    variant="overline"
+                  >
+                    {lookupTitle(key)}
+                  </Typography>
+                  <Divider />
+                  <Box sx={{ my: 1 }}>
+                    <Select
+                      displayEmpty
+                      fullWidth
+                      onChange={(event) =>
+                        setSelect(
+                          key,
+                          event.target.value as number | string | null
+                        )
+                      }
+                      placeholder={lookupTitle(key)}
+                      value={input.selected ?? ''}
+                      variant="outlined"
+                    >
+                      <MenuItem selected value="">
+                        {messages.select}
+                      </MenuItem>
+                      {input.items.map((item, index) => (
+                        <MenuItem
+                          key={`dropdown-item-${index}`}
+                          value={item.value}
+                        >
+                          {item.node}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </Box>
+                </Box>,
+              ];
+            }
+            return [];
+          })}
         </Box>
         <Box
           sx={{

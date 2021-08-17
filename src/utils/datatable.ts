@@ -81,7 +81,7 @@ export const createFilters = <T extends DataTableRecord>(
     data.forEach((row: T, index) => {
       const castColumn = column as keyof T;
       if (isDropdownInput(input) || isCheckboxInput(input)) {
-        const entry = row[castColumn];
+        const entry = row[castColumn] as T[string];
         const node = input.rendering?.disableFilterModal
           ? getSearchEntry?.(entry) ?? entry
           : getRenderedEntry?.(entry) ?? entry;
