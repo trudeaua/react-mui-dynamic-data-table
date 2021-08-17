@@ -41,13 +41,13 @@ export const createFilters = <T extends DataTableRecord>(
       style,
       rendering,
       getRenderedEntry,
-      getRowIdentifier,
+      getFilterIdentifier,
       getSearchEntry,
     }) => {
       const commonProps = {
         style: style ?? 'default',
         getRenderedEntry,
-        getRowIdentifier,
+        getFilterIdentifier,
         getSearchEntry,
       };
       const { style: commonStyle } = commonProps;
@@ -74,38 +74,35 @@ export const createFilters = <T extends DataTableRecord>(
   );
 
   // Populate options
-  Object.entries(filters as Filters<T>).forEach(
-    ([
-      column,
-      { input, getRenderedEntry, getRowIdentifier, getSearchEntry },
-    ]) => {
-      data.forEach((row: DataTableRecord, index) => {
-        if (isDropdownInput(input) || isCheckboxInput(input)) {
-          const entry = row[column];
-          const node = input.rendering?.disableFilterModal
-            ? getSearchEntry?.(entry) ?? entry
-            : getRenderedEntry?.(entry) ?? entry;
-          const id = getRowIdentifier?.(entry) ?? entry ?? index;
-          if (node === null || node === undefined) {
-            return;
-          }
-          const populatedItem = {
-            value: id.toString(),
-            node,
-          };
-          if (
-            input?.items.every((item) => item.value !== populatedItem.value)
-          ) {
-            if (isCheckboxInput(input)) {
-              input.items.push({ ...populatedItem, checked: false });
-            } else {
-              input.items.push(populatedItem);
-            }
+  Object.keys(filters).forEach((column) => {
+    const { input, getRenderedEntry, getFilterIdentifier, getSearchEntry } = (
+      filters as Filters<T>
+    )[column];
+    data.forEach((row: T, index) => {
+      const castColumn = column as keyof T;
+      if (isDropdownInput(input) || isCheckboxInput(input)) {
+        const entry = row[castColumn];
+        const node = input.rendering?.disableFilterModal
+          ? getSearchEntry?.(entry) ?? entry
+          : getRenderedEntry?.(entry) ?? entry;
+        const id = getFilterIdentifier?.(entry) ?? entry ?? index;
+        if (node === null || node === undefined) {
+          return;
+        }
+        const populatedItem = {
+          value: id.toString(),
+          node,
+        };
+        if (input?.items.every((item) => item.value !== populatedItem.value)) {
+          if (isCheckboxInput(input)) {
+            input.items.push({ ...populatedItem, checked: false });
+          } else {
+            input.items.push(populatedItem);
           }
         }
-      });
-    }
-  );
+      }
+    });
+  });
   return filters as Filters<T>;
 };
 
@@ -147,67 +144,70 @@ export const filterData = <T extends DataTableRecord>(
   }
   return data.flatMap(({ key, row }) => {
     const columns = Object.keys(row);
-    const keepFields = columns.filter((column) => {
-      const filter = filters[column];
-      if (!filter) return true;
-      const { input } = filter;
-      const entry = filter.getRowIdentifier?.(row[column]) ?? row[column];
-      // Checkbox filter
-      if (isCheckboxInput(input)) {
-        const checkedCount = input.items.filter((box) => box.checked).length;
+    const keepFields = columns
+      .map((column) => column as keyof T)
+      .filter((column) => {
+        const filter = filters[column];
+        if (!filter) return true;
+        const { input } = filter;
+        const rawEntry = row[column];
+        const entry = filter.getFilterIdentifier?.(rawEntry) ?? rawEntry;
+        // Checkbox filter
+        if (isCheckboxInput(input)) {
+          const checkedCount = input.items.filter((box) => box.checked).length;
 
-        if (
-          typeof entry !== 'string' &&
-          typeof entry !== 'number' &&
-          typeof entry !== 'boolean'
-        ) {
-          return true;
-        }
+          if (
+            typeof entry !== 'string' &&
+            typeof entry !== 'number' &&
+            typeof entry !== 'boolean'
+          ) {
+            return true;
+          }
 
-        return (
-          input.items.find(
-            (item) => item.checked && item.value === entry.toString()
-          ) !== undefined || checkedCount === 0
-        );
-      }
-      // Range filter
-      if (isRangeInput(input)) {
-        const { min, max } = input;
-        if (min === null && max === null) {
-          return true;
+          return (
+            input.items.find(
+              (item) => item.checked && item.value === entry.toString()
+            ) !== undefined || checkedCount === 0
+          );
         }
-        const numericEntry =
-          entry instanceof Date ||
-          typeof entry === 'number' ||
-          typeof entry === 'string'
-            ? new Date(entry).getTime()
-            : entry;
-        if (typeof numericEntry === 'number') {
-          if (min !== null && max !== null) {
-            return min <= numericEntry && numericEntry <= max;
+        // Range filter
+        if (isRangeInput(input)) {
+          const { min, max } = input;
+          if (min === null && max === null) {
+            return true;
           }
-          if (min !== null) {
-            return min <= numericEntry;
+          const numericEntry =
+            entry instanceof Date ||
+            typeof entry === 'number' ||
+            typeof entry === 'string'
+              ? new Date(entry).getTime()
+              : entry;
+          if (typeof numericEntry === 'number') {
+            if (min !== null && max !== null) {
+              return min <= numericEntry && numericEntry <= max;
+            }
+            if (min !== null) {
+              return min <= numericEntry;
+            }
+            if (max !== null) {
+              return numericEntry <= max;
+            }
           }
-          if (max !== null) {
-            return numericEntry <= max;
-          }
-        }
 
-        return false;
-      }
-      // Select filter
-      if (isDropdownInput(input)) {
-        const dropdownOptionEntry =
-          filter.getRowIdentifier?.(row[column]) ?? row[column];
-        return (
-          dropdownOptionEntry === input.selected ||
-          input.selected === null ||
-          input.selected === ''
-        );
-      }
-      return true;
-    });
+          return false;
+        }
+        // Select filter
+        if (isDropdownInput(input)) {
+          const dropdownOptionEntry =
+            filter.getFilterIdentifier?.(row[column]) ?? row[column];
+          return (
+            dropdownOptionEntry === input.selected ||
+            input.selected === null ||
+            input.selected === ''
+          );
+        }
+        return true;
+      });
     return keepFields.length === columns.length ? [{ key, row }] : [];
   });
 };
