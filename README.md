@@ -16,7 +16,7 @@ A dynamic data table component for React that uses Material UI.
   - Range inputs for numbers and dates
   - Dropdown inputs
 - Row selection (single + multi select)
-- Row actions and events (click, edit, and open buttons)
+- Row actions and events (click, edit, delete and open buttons)
 - Custom rendering, searching, and sorting functions
   - Allows user defined callbacks for rendering, searching, and sorting table entries
   - Supports JSON-like objects and React.ReactNode
@@ -164,13 +164,16 @@ return (
 
 ### Row actions
 
-You can choose to show action buttons in the table for editing and opening a row.
+You can choose to show action buttons in the table for editing, opening and deleting a row.
 
 ```typescript
 const handleEdit = (row) => {
     console.log(row);
 }
 const handleOpen = (row) => {
+    console.log(row);
+}
+const handleDelete = (row) => {
     console.log(row);
 }
 return (
@@ -184,6 +187,10 @@ return (
             open: {
                 show: true,
                 onClick: handleOpen,
+            },
+               delete: {
+                show: true,
+                onClick: handleDelete,
             }
         }}
     >

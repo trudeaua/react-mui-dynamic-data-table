@@ -23,6 +23,10 @@ function App() {
     console.log('Row open!');
     console.log(row);
   };
+  const handleDelete = (row: typeof dataset[number]) => {
+    console.log('Row delete!');
+    console.log(row);
+  };
   const handleRowClick = (row: typeof dataset[number]) => {
     console.log('Row clicked!');
     console.log(row);
@@ -66,6 +70,10 @@ function App() {
             open: {
               show: true,
               onClick: handleOpen,
+            },
+            delete: {
+              show: true,
+              onClick: handleDelete,
             },
           },
           header: {

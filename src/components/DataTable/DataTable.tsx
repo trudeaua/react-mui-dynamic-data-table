@@ -33,7 +33,7 @@ import {
   useTheme,
 } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox/Checkbox';
-import { ArrowForward, Search, Edit } from '@material-ui/icons';
+import { ArrowForward, Search, Edit, DeleteForever } from '@material-ui/icons';
 import React, {
   isValidElement,
   useCallback,
@@ -98,6 +98,10 @@ interface TableOptions<T extends DataTableRecord> {
        * Callback for handling clicking the action button
        */
       onClick: (row: T) => void;
+      /**
+       * Icon for edit action
+       */
+      icon?: JSX.Element;
     };
     open?: {
       /**
@@ -108,6 +112,24 @@ interface TableOptions<T extends DataTableRecord> {
        * Callback for handling clicking the action button
        */
       onClick: (row: T) => void;
+      /**
+       * Icon for open action
+       */
+      icon?: JSX.Element;
+    };
+    delete?: {
+      /**
+       * Indicates whether the action button should be shown or not
+       */
+      show: boolean;
+      /**
+       * Callback for handling clicking the action button
+       */
+      onClick: (row: T) => void;
+      /**
+       * Icon for delete action
+       */
+      icon?: JSX.Element;
     };
   };
   /**
@@ -293,6 +315,7 @@ function DataTable<T extends DataTableRecord>({
 
   const handleEditClick = options?.actions?.edit?.onClick;
   const handleOpenClick = options?.actions?.open?.onClick;
+  const handleDeleteClick = options?.actions?.delete?.onClick;
   const handleRowClick = onRowClick;
   const [filters, setFilters] = useState<Filters<T> | null>(null);
   const [query, setQuery] = useState('');
@@ -676,7 +699,8 @@ function DataTable<T extends DataTableRecord>({
                 ))}
                 {options?.actions &&
                   (options.actions?.edit?.show ||
-                    options.actions?.open?.show) && (
+                    options.actions?.open?.show ||
+                    options.actions?.delete?.show) && (
                     <TableCell align="right">{messages.actions}</TableCell>
                   )}
               </TableRow>
@@ -741,14 +765,17 @@ function DataTable<T extends DataTableRecord>({
                     )}
                     {options?.actions &&
                       (options.actions?.edit?.show ||
-                        options.actions?.open?.show) && (
+                        options.actions?.open?.show ||
+                        options.actions?.delete?.show) && (
                         <TableCell align="right">
                           {options.actions?.edit?.show && (
                             <IconButton
                               onClick={() => handleEditClick?.(row)}
                               sx={{ color: theme.palette.text.primary }}
                             >
-                              <Edit color="inherit" fontSize="medium" />
+                              {options.actions?.edit?.icon || (
+                                <Edit color="inherit" fontSize="medium" />
+                              )}
                             </IconButton>
                           )}
                           {options.actions?.open?.show && (
@@ -756,7 +783,25 @@ function DataTable<T extends DataTableRecord>({
                               onClick={() => handleOpenClick?.(row)}
                               sx={{ color: theme.palette.text.primary }}
                             >
-                              <ArrowForward color="inherit" fontSize="medium" />
+                              {options.actions?.open?.icon || (
+                                <ArrowForward
+                                  color="inherit"
+                                  fontSize="medium"
+                                />
+                              )}
+                            </IconButton>
+                          )}
+                          {options.actions?.delete?.show && (
+                            <IconButton
+                              onClick={() => handleDeleteClick?.(row)}
+                              sx={{ color: theme.palette.text.primary }}
+                            >
+                              {options.actions?.delete?.icon || (
+                                <DeleteForever
+                                  color="inherit"
+                                  fontSize="medium"
+                                />
+                              )}
                             </IconButton>
                           )}
                         </TableCell>

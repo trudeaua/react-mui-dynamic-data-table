@@ -75,6 +75,7 @@ module.exports = {
     '@typescript-eslint/consistent-type-imports': 1,
     '@typescript-eslint/no-shadow': 0,
     '@typescript-eslint/no-confusing-void-expression': 'off',
+    '@typescript-eslint/prefer-nullish-coalescing':'off',
     '@typescript-eslint/object-curly-spacing': 'off',
     'no-bitwise': ['error', { allow: ['^'] }],
     camelcase: 0,
